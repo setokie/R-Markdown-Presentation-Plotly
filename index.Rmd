@@ -1,0 +1,67 @@
+---
+title: "Developing Data Product"
+subtitle: "Week 3 Assignment"
+author: "Nur Seto Dimas"
+date: "1 January 2020"
+output: 
+  ioslides_presentation: 
+    highlight: haddock
+    keep_md: yes
+    smaller: yes
+---
+
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 120)
+```
+
+## Overview  
+This is an R Markdown presentation about global suicide rates in 1985 to 2016. The dataset is from [kaggle](https://www.kaggle.com/russellyates88/suicide-rates-overview-1985-to-2016).  
+
+## References
+- United Nations Development Program. (2018). Human development index (HDI). Retrieved from http://hdr.undp.org/en/indicators/137506
+
+- World Bank. (2018). World development indicators: GDP (current US$) by country:1985 to 2016. Retrieved from http://databank.worldbank.org/data/source/world-development-indicators#
+
+- [Szamil]. (2017). Suicide in the Twenty-First Century [dataset]. Retrieved from https://www.kaggle.com/szamil/suicide-in-the-twenty-first-century/notebook
+
+- World Health Organization. (2018). Suicide prevention. Retrieved from http://www.who.int/mental_health/suicide-prevention/en/ 
+
+
+
+## Data Preprocessing
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(plotly)
+
+# load dataset
+plotdata <- read.csv(file = "master.csv")
+
+# tidying up dataset
+plotdata <- plotdata %>% 
+        rename(country.name = ï..country) %>%
+        as.data.frame()
+
+plotdata_summary <- plotdata %>%
+        group_by(year) %>%
+        summarize(population = sum(population),
+                  suicides = sum(suicides_no),
+                  suicides_per_100k = (suicides / population) * 100000)
+```
+
+
+## Plotly
+```{r plot code, eval=FALSE, message=FALSE, warning=FALSE}
+# Create plot
+p <- plot_ly(data = plotdata_summary, 
+             x = ~year, y = ~suicides_per_100k, 
+             mode = "lines+markers") %>%
+        layout(title = "Global Suicides Trends per 100k")
+```
+
+## Plotly
+```{r plot, message=FALSE, warning=FALSE, echo=FALSE}
+# Create plot
+p <- plot_ly(data = plotdata_summary, x = ~year, y = ~suicides_per_100k, mode = "lines+markers") %>%
+        layout(title = "Global Suicides Trends per 100k")
+p
+```
